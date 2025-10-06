@@ -6,9 +6,10 @@ __pycache__/
 env/
 venv/
 .env
-
+.idea/
 # Angular
 /node_modules/
 dist/
 frontend/src/environments/environment.ts
 frontend/src/environments/environment.prod.ts
+.vscode/
