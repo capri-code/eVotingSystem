@@ -1,0 +1,82 @@
+<h2 mat-dialog-title>
+  <mat-icon color="accent">person_add</mat-icon>
+  Shto Kandidat të Ri
+</h2>
+
+<mat-dialog-content>
+  <div class="election-info">
+    <mat-chip color="primary" selected>
+      <mat-icon>ballot</mat-icon>
+      {{ data.electionName }}
+    </mat-chip>
+  </div>
+
+  <form [formGroup]="candidateForm">
+    <div class="candidate-preview">
+      <div class="preview-card">
+        <div class="avatar-container">
+          <img 
+            *ngIf="previewUrl" 
+            [src]="previewUrl" 
+            alt="Preview"
+            (error)="onImageError()">
+          <div *ngIf="!previewUrl" class="avatar-placeholder">
+            {{ getCandidateInitial() }}
+          </div>
+        </div>
+        <div class="preview-info">
+          <h3>{{ candidateForm.get('name')?.value || 'Emri i Kandidatit' }}</h3>
+          <p>{{ candidateForm.get('party')?.value || 'Partia/Organizata' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Emri i Plotë</mat-label>
+      <input 
+        matInput 
+        formControlName="name" 
+        placeholder="p.sh. John Doe">
+      <mat-icon matSuffix>person</mat-icon>
+      <mat-error>{{ getErrorMessage('name') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Partia/Organizata</mat-label>
+      <input 
+        matInput 
+        formControlName="party" 
+        placeholder="p.sh. Partia Demokratike">
+      <mat-icon matSuffix>groups</mat-icon>
+      <mat-error>{{ getErrorMessage('party') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>URL e Fotografisë (Opsionale)</mat-label>
+      <input 
+        matInput 
+        formControlName="imageUrl" 
+        placeholder="https://example.com/photo.jpg">
+      <mat-icon matSuffix>image</mat-icon>
+      <mat-error>{{ getErrorMessage('imageUrl') }}</mat-error>
+      <mat-hint>Vendosni një link të fotografisë (JPG, PNG, GIF)</mat-hint>
+    </mat-form-field>
+
+    <div class="info-message">
+      <mat-icon>info</mat-icon>
+      <p>Kandidati do të shtohet menjëherë në listën e votimit pas konfirmimit.</p>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Anulo</button>
+  <button 
+    mat-raised-button 
+    color="accent" 
+    (click)="onSubmit()"
+    [disabled]="candidateForm.invalid">
+    <mat-icon>add</mat-icon>
+    Shto Kandidatin
+  </button>
+</mat-dialog-actions>

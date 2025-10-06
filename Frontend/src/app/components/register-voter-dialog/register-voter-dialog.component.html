@@ -1,0 +1,128 @@
+<h2 mat-dialog-title>
+  <mat-icon color="warn">group_add</mat-icon>
+  Regjistro Votues
+</h2>
+
+<mat-dialog-content>
+  <div class="election-info">
+    <mat-chip color="primary" selected>
+      <mat-icon>ballot</mat-icon>
+      {{ data.electionName }}
+    </mat-chip>
+    <mat-chip color="accent" selected *ngIf="voterAddresses.length > 0">
+      <mat-icon>people</mat-icon>
+      {{ voterAddresses.length }} votues të zgjedhur
+    </mat-chip>
+  </div>
+
+  <mat-tab-group [selectedIndex]="inputMode === 'single' ? 0 : 1">
+    <!-- Single Address Tab -->
+    <mat-tab label="Një nga një">
+      <div class="tab-content">
+        <div class="input-section">
+          <mat-form-field appearance="outline" class="address-input">
+            <mat-label>Adresa e Wallet (Ethereum)</mat-label>
+            <input 
+              matInput 
+              [formControl]="addressInput"
+              placeholder="0x..."
+              (keyup.enter)="addAddress()">
+            <mat-icon matSuffix>account_balance_wallet</mat-icon>
+            <mat-error>{{ getAddressError() }}</mat-error>
+            <mat-hint>Formati: 0x dhe 40 karaktere (42 total)</mat-hint>
+          </mat-form-field>
+          
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="addAddress()"
+            [disabled]="addressInput.invalid">
+            <mat-icon>add</mat-icon>
+            Shto
+          </button>
+        </div>
+
+        <div class="example-box">
+          <mat-icon>info</mat-icon>
+          <small>Shembull: 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0</small>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Bulk Import Tab -->
+    <mat-tab label="Import masiv">
+      <div class="tab-content">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Vendosni adresat (një për rresht)</mat-label>
+          <textarea 
+            matInput 
+            [(ngModel)]="bulkInput"
+            rows="6"
+            placeholder="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0&#10;0x5aAeb6053f3E94C9b9A09f33669435E7Ef1BeAed&#10;0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359">
+          </textarea>
+          <mat-hint>Vendosni një adresë për çdo rresht</mat-hint>
+        </mat-form-field>
+        
+        <button 
+          mat-raised-button 
+          color="accent" 
+          (click)="processBulkInput()"
+          [disabled]="!bulkInput.trim()">
+          <mat-icon>upload</mat-icon>
+          Importo Adresat
+        </button>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <!-- Registered Voters List -->
+  <div class="voters-list" *ngIf="voterAddresses.length > 0">
+    <h3>
+      <mat-icon>list</mat-icon>
+      Votuesit e Regjistruar ({{ voterAddresses.length }})
+    </h3>
+    
+    <div class="address-chips">
+      <mat-chip 
+        *ngFor="let address of voterAddresses; let i = index"
+        [removable]="true"
+        (removed)="removeAddress(i)">
+        <mat-icon>person</mat-icon>
+        <span class="address-text">{{ formatAddress(address) }}</span>
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+    </div>
+
+    <button mat-button color="warn" (click)="clearAll()">
+      <mat-icon>clear_all</mat-icon>
+      Pastro të Gjitha
+    </button>
+  </div>
+
+  <div class="empty-state" *ngIf="voterAddresses.length === 0">
+    <mat-icon>group</mat-icon>
+    <p>Nuk ka votues të shtuar ende</p>
+    <small>Shtoni adresat e wallet-eve të votuesve që do të kenë të drejtë vote</small>
+  </div>
+
+  <div class="warning-message">
+    <mat-icon color="warn">warning</mat-icon>
+    <p>
+      <strong>Kujdes:</strong> Vetëm adresat e regjistruara do të mund të votojnë në këtë zgjedhje.
+      Sigurohuni që të shtoni të gjithë votuesit e eligjibël përpara se të fillojë votimi.
+    </p>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <span class="spacer"></span>
+  <button mat-button (click)="onCancel()">Anulo</button>
+  <button 
+    mat-raised-button 
+    color="primary" 
+    (click)="onSubmit()"
+    [disabled]="voterAddresses.length === 0">
+    <mat-icon>save</mat-icon>
+    Regjistro {{ voterAddresses.length }} Votues
+  </button>
+</mat-dialog-actions>

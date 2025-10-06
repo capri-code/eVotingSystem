@@ -1,0 +1,19 @@
+{
+  "APP": {
+    "TITLE": "Sistemi i Votimit me Blockchain"
+  },
+  "NAV": {
+    "DASHBOARD": "Paneli",
+    "ELECTIONS": "Zgjedhjet",
+    "RESULTS": "Rezultatet"
+  },
+  "USER": {
+    "ADMIN": "Administrator",
+    "VOTER": "Votues",
+    "LOGOUT": "Dalje"
+  },
+  "FOOTER": {
+    "COPYRIGHT": "Sistemi i Votimit me Blockchain. Të gjitha të drejtat e rezervuara.",
+    "POWERED_BY": "Mundësuar nga Ethereum Blockchain & Smart Contracts"
+  }
+}

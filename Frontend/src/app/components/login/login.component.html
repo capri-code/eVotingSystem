@@ -1,0 +1,213 @@
+<div class="login-container">
+  <div class="login-wrapper">
+    <!-- Left Side - Hero Section -->
+    <div class="hero-section">
+      <div class="hero-content">
+        <div class="logo-wrapper">
+          <div class="logo-circle">
+            <mat-icon class="logo-icon">how_to_vote</mat-icon>
+          </div>
+        </div>
+        
+        <h1 class="hero-title">Votimi Dixhital i Së Ardhmes</h1>
+        <p class="hero-subtitle">Transparencë. Siguri. Demokraci.</p>
+        
+        <div class="features-grid">
+          <div class="feature-card">
+            <mat-icon>shield</mat-icon>
+            <h3>100% i Sigurt</h3>
+            <p>Teknologjia blockchain garanton integritetin e votës</p>
+          </div>
+          <div class="feature-card">
+            <mat-icon>visibility</mat-icon>
+            <h3>Transparent</h3>
+            <p>Rezultate të verifikueshme në kohë reale</p>
+          </div>
+          <div class="feature-card">
+            <mat-icon>flash_on</mat-icon>
+            <h3>I Shpejtë</h3>
+            <p>Votoni në sekonda, shikoni rezultatet menjëherë</p>
+          </div>
+          <div class="feature-card">
+            <mat-icon>lock</mat-icon>
+            <h3>Anonim</h3>
+            <p>Identiteti juaj mbetet i mbrojtur</p>
+          </div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat">
+            <span class="stat-number">10K+</span>
+            <span class="stat-label">Votues Aktivë</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">50+</span>
+            <span class="stat-label">Zgjedhje</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">99.9%</span>
+            <span class="stat-label">Uptime</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="blockchain-visual">
+        <div class="blockchain-chain">
+          <div class="block" *ngFor="let i of [1,2,3,4]" [style.animation-delay]="i * 0.2 + 's'">
+            <div class="block-content">
+              <span class="block-hash">{{ generateHash() }}</span>
+              <div class="block-data">
+                <mat-icon>how_to_vote</mat-icon>
+              </div>
+            </div>
+            <div class="block-connector" *ngIf="i < 4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side - Login Form -->
+    <div class="login-section">
+      <div class="login-card">
+        <div class="login-header">
+          <h2>Mirë se vini</h2>
+          <p>Konektohuni me wallet-in tuaj për të vazhduar</p>
+        </div>
+
+        <!-- MetaMask Status -->
+        <div class="metamask-status" [class.connected]="currentAccount">
+          <div class="status-indicator">
+            <div class="status-dot" [class.active]="hasMetaMask"></div>
+            <span>{{ hasMetaMask ? (currentAccount ? 'I Konektuar' : 'MetaMask i gatshëm') : 'MetaMask mungon' }}</span>
+          </div>
+        </div>
+
+        <!-- Connection Card -->
+        <div class="connection-card" *ngIf="!currentAccount">
+          <div class="metamask-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask">
+          </div>
+          
+          <h3>Konektohuni me MetaMask</h3>
+          <p>Përdorni MetaMask wallet për të hyrë në sistem në mënyrë të sigurt</p>
+          
+          <button 
+            mat-raised-button 
+            class="connect-wallet-btn"
+            (click)="connectWallet()"
+            [disabled]="loading || !hasMetaMask">
+            <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+            <mat-icon *ngIf="!loading">account_balance_wallet</mat-icon>
+            <span>{{ loading ? 'Duke u konektuar...' : 'Konekto Wallet' }}</span>
+          </button>
+
+          <div class="install-metamask" *ngIf="!hasMetaMask">
+            <mat-icon>warning</mat-icon>
+            <p>MetaMask nuk është i instaluar</p>
+            <button mat-stroked-button (click)="connectWallet()">
+              Instalo MetaMask
+            </button>
+          </div>
+        </div>
+
+        <!-- Connected Account Card -->
+        <div class="account-card" *ngIf="currentAccount">
+          <div class="account-avatar">
+            <div class="avatar-gradient">
+              {{ currentAccount.substring(2, 4).toUpperCase() }}
+            </div>
+          </div>
+          
+          <div class="account-info">
+            <label>Adresa e Wallet</label>
+            <div class="address-display">
+              <span class="address">{{ formatAddress(currentAccount) }}</span>
+              <button mat-icon-button (click)="copyAddress()" matTooltip="Kopjo adresën">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="network-info">
+            <mat-icon>language</mat-icon>
+            <span>{{ getNetworkName() }}</span>
+            <div class="network-indicator" [class.mainnet]="networkId === 1"></div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <button 
+            mat-raised-button 
+            class="proceed-btn"
+            (click)="connectWallet()"
+            [disabled]="loading">
+            <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+            <span>{{ loading ? 'Duke procesuar...' : 'Hyr në Sistem' }}</span>
+            <mat-icon *ngIf="!loading">arrow_forward</mat-icon>
+          </button>
+
+          <button mat-button class="disconnect-btn" (click)="disconnectWallet()">
+            <mat-icon>logout</mat-icon>
+            Ndërro Llogarinë
+          </button>
+        </div>
+
+        <!-- Help Section -->
+        <div class="help-section">
+          <h4>Si funksionon?</h4>
+          <div class="steps">
+            <div class="step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <strong>Instaloni MetaMask</strong>
+                <small>Shkarkoni extension për browser</small>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <strong>Importoni Llogarinë</strong>
+                <small>Përdorni private key nga Ganache</small>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <strong>Konektohuni</strong>
+                <small>Klikoni butonin dhe aprovoni në MetaMask</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Note -->
+        <div class="security-note">
+          <mat-icon>verified_user</mat-icon>
+          <p>
+            Të dhënat tuaja janë të sigurta. Ne nuk ruajmë asnjë private key.
+            Gjithçka menaxhohet nga MetaMask wallet.
+          </p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="login-footer">
+        <p>&copy; {{copyrightYear}} Blockchain Voting System</p>
+        <div class="footer-links">
+          <a href="#">Rreth Nesh</a>
+          <a href="#">Siguria</a>
+          <a href="#">Ndihmë</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Elements -->
+  <div class="floating-elements">
+    <div class="floating-cube cube-1"></div>
+    <div class="floating-cube cube-2"></div>
+    <div class="floating-cube cube-3"></div>
+    <div class="floating-circle circle-1"></div>
+    <div class="floating-circle circle-2"></div>
+  </div>
+</div>

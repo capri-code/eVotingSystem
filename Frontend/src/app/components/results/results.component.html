@@ -1,0 +1,216 @@
+<div class="results-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <h1 *ngIf="results && results.election">{{ results.election.name }} - Live Results</h1>
+        <h1 *ngIf="!results || !results.election">Loading Results...</h1>
+      </mat-card-title>
+      <mat-card-subtitle>
+        <div class="status-info">
+          <span class="last-update">Last Update: {{ lastUpdate | date:'medium' }}</span>
+          <button mat-icon-button (click)="refresh()" matTooltip="Refresh">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading results...</p>
+  </div>
+
+  <div *ngIf="error" class="error-container">
+    <mat-card>
+      <mat-card-content>
+        <p class="error-message">{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="refresh()">Retry</button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div *ngIf="!loading && !error && results" class="results-content">
+    <!-- Election Summary -->
+    <mat-card class="summary-card" @fadeIn>
+      <mat-card-content>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <mat-icon color="primary">how_to_vote</mat-icon>
+            <div>
+              <h3>Total Votes</h3>
+              <p class="value">{{ totalVotes }}</p>
+            </div>
+          </div>
+          <div class="summary-item">
+            <mat-icon color="accent">people</mat-icon>
+            <div>
+              <h3>Candidates</h3>
+              <p class="value">{{ results.election.candidateCount }}</p>
+            </div>
+          </div>
+          <div class="summary-item">
+            <mat-icon [color]="isElectionActive() ? 'primary' : 'warn'">schedule</mat-icon>
+            <div>
+              <h3>Status</h3>
+              <p class="value" [class.active]="isElectionActive()">
+                {{ results.election.status || 'Unknown' }}
+              </p>
+            </div>
+          </div>
+          <div class="summary-item" *ngIf="!isTie && leadingCandidate">
+            <mat-icon color="primary">emoji_events</mat-icon>
+            <div>
+              <h3>Në Krye</h3>
+              <p class="value">{{ leadingCandidate.name }}</p>
+            </div>
+          </div>
+          <div class="summary-item" *ngIf="isTie">
+            <mat-icon color="warn">warning</mat-icon>
+            <div>
+              <h3>Barazim!</h3>
+              <p class="value">{{ tiedCandidates.length }} kandidatë</p>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Results Table -->
+    <mat-card class="results-table-card">
+      <mat-card-header>
+        <mat-card-title>Candidates Ranking</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="candidates-list">
+          <div *ngFor="let candidate of results.candidates; let i = index" 
+               class="candidate-row" 
+               @slideIn
+               [style.animation-delay]="i * 0.1 + 's'">
+            
+            <div class="position-badge" [class.winner]="i === 0">
+              <span class="position-icon">{{ getPositionIcon(i + 1) }}</span>
+            </div>
+
+            <div class="candidate-info">
+              <img *ngIf="candidate.imageUrl" 
+                   [src]="candidate.imageUrl" 
+                   [alt]="candidate.name"
+                   class="candidate-image">
+              <div *ngIf="!candidate.imageUrl" class="candidate-avatar">
+                {{ candidate.name.charAt(0).toUpperCase() }}
+              </div>
+              <div class="candidate-details">
+                <h3>{{ candidate.name }}</h3>
+                <p>{{ candidate.party }}</p>
+              </div>
+            </div>
+
+            <div class="vote-info">
+              <div class="vote-count">
+                <strong>{{ candidate.voteCount }}</strong> votes
+              </div>
+              <div class="vote-percentage">
+                {{ getVotePercentage(candidate) }}%
+              </div>
+            </div>
+
+            <div class="progress-container">
+              <mat-progress-bar 
+                mode="determinate" 
+                [value]="getVotePercentage(candidate)"
+                [class]="getProgressBarClass(i + 1)">
+              </mat-progress-bar>
+            </div>
+          </div>
+
+          <div *ngIf="results.candidates.length === 0" class="no-candidates">
+            <mat-icon>info</mat-icon>
+            <p>No candidates registered yet</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Live Update Indicator -->
+    <div class="live-indicator" *ngIf="isElectionActive()">
+      <span class="pulse"></span>
+      <span>Live Updates Active</span>
+    </div>
+
+    <!-- Election Timeline -->
+    <mat-card class="timeline-card">
+      <mat-card-header>
+        <mat-card-title>Election Timeline</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="timeline">
+          <div class="timeline-item">
+            <mat-icon>event</mat-icon>
+            <div>
+              <strong>Start Time:</strong>
+              <p>{{ formatDate(results.election.startTime) }}</p>
+            </div>
+          </div>
+          <div class="timeline-progress">
+            <mat-progress-bar 
+              mode="determinate" 
+              [value]="votingService.getElectionProgress(results.election)">
+            </mat-progress-bar>
+          </div>
+          <div class="timeline-item">
+            <mat-icon>event_busy</mat-icon>
+            <div>
+              <strong>End Time:</strong>
+              <p>{{ formatDate(results.election.endTime) }}</p>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Winner Declaration (if election ended) -->
+    <mat-card *ngIf="isElectionEnded() && !isTie && leadingCandidate" class="winner-card">
+      <mat-card-content>
+        <h2>🎉 Fituesi i Zgjedhjeve 🎉</h2>
+        <div class="winner-info">
+          <img *ngIf="leadingCandidate.imageUrl" 
+               [src]="leadingCandidate.imageUrl" 
+               [alt]="leadingCandidate.name"
+               class="winner-image">
+          <h1>{{ leadingCandidate.name }}</h1>
+          <p>{{ leadingCandidate.party }}</p>
+          <div class="winner-stats">
+            <span class="votes">{{ leadingCandidate.voteCount }} vota</span>
+            <span class="percentage">{{ getVotePercentage(leadingCandidate) }}%</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Tie Declaration (if election ended with tie) -->
+    <mat-card *ngIf="isElectionEnded() && isTie" class="tie-card">
+      <mat-card-content>
+        <h2>⚖️ Zgjedhjet Përfunduan me Barazim! ⚖️</h2>
+        <p class="tie-message">Kandidatët e mëposhtëm kanë numër të barabartë votash:</p>
+        <div class="tied-candidates-list">
+          <div *ngFor="let candidate of tiedCandidates" class="tied-candidate">
+            <img *ngIf="candidate.imageUrl" 
+                 [src]="candidate.imageUrl" 
+                 [alt]="candidate.name"
+                 class="tied-candidate-image">
+            <div *ngIf="!candidate.imageUrl" class="tied-candidate-avatar">
+              {{ candidate.name.charAt(0) }}
+            </div>
+            <div class="tied-candidate-info">
+              <h3>{{ candidate.name }}</h3>
+              <p>{{ candidate.party }}</p>
+              <strong>{{ candidate.voteCount }} vota</strong>
+            </div>
+          </div>
+        </div>
+        <p class="tie-resolution">Nevojitet një raund i dytë votimi për të përcaktuar fituesin.</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

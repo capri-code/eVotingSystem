@@ -1,0 +1,19 @@
+{
+  "APP": {
+    "TITLE": "Blockchain Voting System"
+  },
+  "NAV": {
+    "DASHBOARD": "Dashboard",
+    "ELECTIONS": "Elections",
+    "RESULTS": "Results"
+  },
+  "USER": {
+    "ADMIN": "Administrator",
+    "VOTER": "Voter",
+    "LOGOUT": "Logout"
+  },
+  "FOOTER": {
+    "COPYRIGHT": "Blockchain Voting System. All rights reserved.",
+    "POWERED_BY": "Powered by Ethereum Blockchain & Smart Contracts"
+  }
+}

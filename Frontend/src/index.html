@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Blockchain Voting System - Sistemi i Votimit Elektronik</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Sistemi i votimit elektronik i ndërtuar me teknologjinë blockchain për zgjedhje transparente dhe të sigurta">
+  <meta name="keywords" content="voting, blockchain, ethereum, smart contracts, democracy, zgjedhje, votim">
+  <meta name="author" content="Blockchain Voting System">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#3f51b5">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Blockchain Voting System">
+  <meta property="og:description" content="Sistemi i votimit elektronik me blockchain">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://voting-system.com">
+  
+  <!-- No Script Message -->
+  <noscript>
+    <style>
+      .no-js {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-align: center;
+        padding: 20px;
+        font-family: 'Roboto', sans-serif;
+      }
+      .no-js h1 {
+        font-size: 32px;
+        margin-bottom: 20px;
+      }
+      .no-js p {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+    </style>
+  </noscript>
+</head>
+<body class="mat-typography">
+  <app-root>
+    <div class="app-loading">
+      <style>
+        .app-loading {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          font-family: 'Roboto', sans-serif;
+        }
+        
+        .app-loading .logo {
+          width: 120px;
+          height: 120px;
+          background: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 30px;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+          animation: pulse 2s infinite;
+        }
+        
+        .app-loading .logo svg {
+          width: 60px;
+          height: 60px;
+          fill: #667eea;
+        }
+        
+        .app-loading h1 {
+          font-size: 28px;
+          font-weight: 300;
+          margin-bottom: 10px;
+          text-align: center;
+        }
+        
+        .app-loading .spinner {
+          width: 40px;
+          height: 40px;
+          border: 3px solid rgba(255,255,255,0.3);
+          border-top-color: white;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin-top: 20px;
+        }
+        
+        .app-loading .message {
+          margin-top: 20px;
+          font-size: 14px;
+          opacity: 0.8;
+        }
+        
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+      </style>
+      
+      <div class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M18 13h-.68l-2 2h1.91L19 17H5l1.78-2h2.05l-2-2H6l-3 3v4c0 1.1.89 2 1.99 2H19c1.1 0 2-.9 2-2v-4l-3-3zm-1-5.05l-4.95 4.95-3.54-3.54 4.95-4.95L17 7.95zm-4.24-5.66L6.39 8.66c-.39.39-.39 1.02 0 1.41l4.95 4.95c.39.39 1.02.39 1.41 0l6.36-6.36c.39-.39.39-1.02 0-1.41L14.16 2.3c-.38-.4-1.01-.4-1.4-.01z"/>
+        </svg>
+      </div>
+      
+      <h1>Blockchain Voting System</h1>
+      <div class="spinner"></div>
+      <p class="message">Duke u ngarkuar...</p>
+    </div>
+  </app-root>
+  <noscript>
+    <div class="no-js">
+      <h1>JavaScript është i nevojshëm</h1>
+      <p>Ju lutem aktivizoni JavaScript në browser për të përdorur këtë aplikacion.</p>
+      <p>This application requires JavaScript to be enabled.</p>
+    </div>
+  </noscript>
+</body>
+</html>

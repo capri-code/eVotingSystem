@@ -1,0 +1,312 @@
+.admin-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.header-toolbar {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo-icon {
+  margin-right: 10px;
+}
+
+.toolbar-title {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+/* Stats Container */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.stat-card.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.stat-content mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+}
+
+.stat-info h3 {
+  margin: 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.8;
+}
+
+.stat-value {
+  margin: 10px 0 0 0;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+/* Content Container */
+.content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Actions Card */
+.actions-card {
+  margin-bottom: 20px;
+  border-radius: 12px;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  padding: 10px 0;
+}
+
+.actions-grid button {
+  height: 56px;
+  font-size: 16px;
+}
+
+.actions-grid mat-icon {
+  margin-right: 8px;
+}
+
+/* Elections Table Card */
+.elections-table-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.elections-table-card mat-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: #f5f5f5;
+}
+
+.elections-table-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #ccc;
+  margin-bottom: 20px;
+}
+
+.empty-state h3 {
+  margin: 0 0 10px 0;
+  font-size: 24px;
+  color: #666;
+}
+
+.empty-state p {
+  margin: 0 0 20px 0;
+  color: #999;
+}
+
+/* Elections Table */
+.elections-table {
+  width: 100%;
+}
+
+.elections-table th {
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: #f8f9fa;
+}
+
+.elections-table td {
+  padding: 16px 12px;
+}
+
+.elections-table tr.selected {
+  background-color: #f0f4ff;
+}
+
+.elections-table tr:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+.election-name {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.election-name strong {
+  font-size: 16px;
+  color: #333;
+}
+
+.election-name small {
+  color: #666;
+  font-size: 12px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #e0e0e0;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.badge.primary {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.period-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #666;
+}
+
+.period-info mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+/* Election Details Card */
+.election-details-card {
+  margin-top: 20px;
+  border-radius: 12px;
+  animation: slideInUp 0.3s ease;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-item label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #666;
+  font-weight: 600;
+}
+
+.detail-item span {
+  font-size: 16px;
+  color: #333;
+}
+
+.detail-item .address {
+  font-family: monospace;
+  font-size: 14px;
+  word-break: break-all;
+}
+
+/* Mat Chip Customization */
+mat-chip {
+  font-weight: 500;
+  font-size: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .elections-table {
+    font-size: 12px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+}

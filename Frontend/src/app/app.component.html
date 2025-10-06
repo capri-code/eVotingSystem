@@ -1,0 +1,118 @@
+<div class="app-container">
+  <!-- Global Navigation Bar (shown only when logged in) -->
+  <mat-toolbar color="primary" class="app-navbar" *ngIf="showNavbar && currentUser">
+    <mat-toolbar-row>
+      <button mat-icon-button class="menu-button">
+        <mat-icon>menu</mat-icon>
+      </button>
+      
+      <span class="app-title">
+        <mat-icon>how_to_vote</mat-icon>
+        {{ 'APP.TITLE' | translate }}
+      </span>
+      
+      <span class="spacer"></span>
+
+            <!-- Language Switcher -->
+      <div class="language-switcher">
+        <button mat-icon-button [matMenuTriggerFor]="langMenu" class="lang-button">
+          <mat-icon>language</mat-icon>
+          <span class="current-lang">{{ currentLang.toUpperCase() }}</span>
+        </button>
+        
+        <mat-menu #langMenu="matMenu" class="language-menu">
+          <button mat-menu-item 
+                  (click)="switchLanguage('en')"
+                  [class.active-lang]="currentLang === 'en'">
+            <mat-icon>{{ currentLang === 'en' ? 'check' : '' }}</mat-icon>
+            <span class="lang-option">
+              <span class="lang-flag">🇬🇧</span>
+              <span class="lang-name">English</span>
+            </span>
+          </button>
+          <button mat-menu-item 
+                  (click)="switchLanguage('sq')"
+                  [class.active-lang]="currentLang === 'sq'">
+            <mat-icon>{{ currentLang === 'sq' ? 'check' : '' }}</mat-icon>
+            <span class="lang-option">
+              <span class="lang-flag">🇦🇱</span>
+              <span class="lang-name">Shqip</span>
+            </span>
+          </button>
+        </mat-menu>
+      </div>
+      
+      <!-- Navigation Links -->
+      <nav class="nav-links">
+        <button mat-button 
+                [routerLink]="currentUser?.isAdmin ? '/admin' : '/dashboard'"
+                routerLinkActive="active">
+          <mat-icon>dashboard</mat-icon>
+          <span class="nav-text">{{ 'NAV.DASHBOARD' | translate }}</span>
+        </button>
+        
+        <button mat-button 
+                routerLink="/elections" 
+                routerLinkActive="active">
+          <mat-icon>ballot</mat-icon>
+          <span class="nav-text">Zgjedhjet</span>
+        </button>
+        
+        <button mat-button 
+                routerLink="/results/1" 
+                routerLinkActive="active"
+                *ngIf="!currentUser?.isAdmin">
+          <mat-icon>bar_chart</mat-icon>
+          <span class="nav-text">Rezultatet</span>
+        </button>
+      </nav>
+      
+      <!-- User Info -->
+      <div class="user-info">
+        <mat-chip>
+          <mat-chip [color]="currentUser?.isAdmin ? 'accent' : 'primary'" selected>
+            <mat-icon>{{ currentUser?.isAdmin ? 'admin_panel_settings' : 'person' }}</mat-icon>
+            {{ getUserRole() }}
+          </mat-chip>
+        </mat-chip>
+        
+        <span class="user-address">{{ formatAddress(currentUser?.address) }}</span>
+        
+        <button mat-icon-button 
+                [matMenuTriggerFor]="userMenu" 
+                class="user-menu-button">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        
+        <mat-menu #userMenu="matMenu">
+          <div class="user-menu-header">
+            <mat-icon>account_balance_wallet</mat-icon>
+            <div class="address-full">{{ currentUser?.address }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="navigateTo('/dashboard')">
+            <mat-icon>dashboard</mat-icon>
+            <span>Dashboard</span>
+          </button>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Dalje</span>
+          </button>
+        </mat-menu>
+      </div>
+    </mat-toolbar-row>
+  </mat-toolbar>
+
+  <!-- Main Content Area -->
+  <main class="main-content" [class.with-navbar]="showNavbar">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Footer (shown only on login page) -->
+  <footer class="app-footer" *ngIf="isLoginPage()">
+    <div class="footer-content">
+      <p>&copy; {{copyrightYear}} {{ 'FOOTER.COPYRIGHT' | translate }}</p>
+      <p>{{ 'FOOTER.POWERED_BY' | translate }}</p>
+    </div>
+  </footer>
+</div>

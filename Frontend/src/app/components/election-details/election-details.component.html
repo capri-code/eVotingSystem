@@ -1,0 +1,283 @@
+<div class="election-details-container">
+  <!-- Header -->
+  <mat-toolbar color="primary" class="details-header">
+    <button mat-icon-button routerLink="/elections">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="header-title">Detajet e Zgjedhjes</span>
+    <span class="spacer"></span>
+    <button mat-icon-button (click)="refresh()">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Duke ngarkuar detajet...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading && election" class="details-content">
+    
+    <!-- Election Header Card -->
+    <mat-card class="election-header-card">
+      <mat-card-header>
+        <mat-card-title>
+          <h1>{{ election.name }}</h1>
+        </mat-card-title>
+        <mat-card-subtitle>
+          <div class="header-info">
+            <mat-chip [color]="getStatusColor()" selected>
+              {{ getElectionStatus() }}
+            </mat-chip>
+            <span class="election-id">ID: #{{ election.id }}</span>
+          </div>
+        </mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <p class="description">{{ election.description }}</p>
+        
+        <!-- Progress Bar -->
+        <div class="progress-section">
+          <div class="progress-header">
+            <span>Progresi i Zgjedhjes</span>
+            <span>{{ stats.progress }}%</span>
+          </div>
+          <mat-progress-bar 
+            mode="determinate" 
+            [value]="stats.progress"
+            [color]="getStatusColor()">
+          </mat-progress-bar>
+          <div class="time-info">
+            <mat-icon>schedule</mat-icon>
+            <span>{{ stats.timeRemaining }}</span>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline">
+          <div class="timeline-item">
+            <mat-icon color="primary">event</mat-icon>
+            <div>
+              <label>Fillimi:</label>
+              <span>{{ formatDate(election.startTime) }}</span>
+            </div>
+          </div>
+          <div class="timeline-divider"></div>
+          <div class="timeline-item">
+            <mat-icon color="warn">event_busy</mat-icon>
+            <div>
+              <label>Përfundimi:</label>
+              <span>{{ formatDate(election.endTime) }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-raised-button color="primary" 
+                (click)="navigateToVote()"
+                [disabled]="!canVote()">
+          <mat-icon>how_to_vote</mat-icon>
+          {{ voterStatus?.hasVoted ? 'Keni Votuar' : 'Voto Tani' }}
+        </button>
+        <button mat-button (click)="viewResults()">
+          <mat-icon>bar_chart</mat-icon>
+          Shiko Rezultatet
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <mat-icon color="primary">how_to_vote</mat-icon>
+            <div>
+              <h3>Totali Votave</h3>
+              <p class="stat-value">{{ stats.totalVotes }}</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <mat-icon color="accent">people</mat-icon>
+            <div>
+              <h3>Kandidatë</h3>
+              <p class="stat-value">{{ stats.candidateCount }}</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <mat-icon color="warn">trending_up</mat-icon>
+            <div>
+              <h3>Mesatarja</h3>
+              <p class="stat-value">{{ stats.averageVotes }}</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card" *ngIf="stats.leadingCandidate">
+        <mat-card-content>
+          <div class="stat-content">
+            <mat-icon color="primary">emoji_events</mat-icon>
+            <div>
+              <h3>Në Krye</h3>
+              <p class="stat-value">{{ stats.leadingCandidate }}</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Voter Status Card -->
+    <mat-card class="voter-status-card" *ngIf="voterStatus">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>person</mat-icon>
+          Statusi Juaj i Votimit
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="status-grid">
+          <div class="status-item">
+            <mat-icon [color]="voterStatus.eligible ? 'primary' : 'warn'">
+              {{ voterStatus.eligible ? 'check_circle' : 'cancel' }}
+            </mat-icon>
+            <span>{{ voterStatus.eligible ? 'I Regjistruar' : 'Jo i Regjistruar' }}</span>
+          </div>
+          <div class="status-item">
+            <mat-icon [color]="voterStatus.hasVoted ? 'primary' : ''">
+              {{ voterStatus.hasVoted ? 'done_all' : 'radio_button_unchecked' }}
+            </mat-icon>
+            <span>{{ voterStatus.hasVoted ? 'Keni Votuar' : 'Nuk keni votuar ende' }}</span>
+          </div>
+          <div class="status-item">
+            <mat-icon [color]="voterStatus.canVote ? 'primary' : 'warn'">
+              {{ voterStatus.canVote ? 'thumb_up' : 'thumb_down' }}
+            </mat-icon>
+            <span>{{ voterStatus.canVote ? 'Mund të votoni' : 'Nuk mund të votoni' }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Admin Actions (if admin) -->
+    <mat-card class="admin-actions-card" *ngIf="isAdmin">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>admin_panel_settings</mat-icon>
+          Veprimet e Administratorit
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="admin-actions">
+          <button mat-raised-button color="accent" (click)="openAddCandidateDialog()">
+            <mat-icon>person_add</mat-icon>
+            Shto Kandidat
+          </button>
+          <button mat-raised-button color="primary" (click)="openRegisterVotersDialog()">
+            <mat-icon>group_add</mat-icon>
+            Regjistro Votues
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Candidates List -->
+    <mat-card class="candidates-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>groups</mat-icon>
+          Kandidatët ({{ candidates.length }})
+        </mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div *ngIf="loadingCandidates" class="loading-candidates">
+          <mat-spinner diameter="30"></mat-spinner>
+          <span>Duke ngarkuar kandidatët...</span>
+        </div>
+
+        <div *ngIf="!loadingCandidates && candidates.length === 0" class="no-candidates">
+          <mat-icon>person_off</mat-icon>
+          <p>Nuk ka kandidatë të regjistruar ende</p>
+        </div>
+
+        <div class="candidates-list" *ngIf="!loadingCandidates && candidates.length > 0">
+          <div *ngFor="let candidate of candidates; let i = index" class="candidate-item">
+            <div class="candidate-rank">
+              <span class="rank-number">{{ i + 1 }}</span>
+            </div>
+            
+            <div class="candidate-avatar">
+              <img *ngIf="candidate.imageUrl" [src]="candidate.imageUrl" [alt]="candidate.name">
+              <div *ngIf="!candidate.imageUrl" class="avatar-placeholder">
+                {{ candidate.name.charAt(0) }}
+              </div>
+            </div>
+            
+            <div class="candidate-info">
+              <h3>{{ candidate.name }}</h3>
+              <p>{{ candidate.party }}</p>
+            </div>
+            
+            <div class="candidate-votes">
+              <strong>{{ candidate.voteCount }}</strong> vota
+              <span class="percentage">({{ getCandidatePercentage(candidate) }}%)</span>
+            </div>
+            
+            <div class="candidate-progress">
+              <mat-progress-bar 
+                mode="determinate" 
+                [value]="getCandidatePercentage(candidate)"
+                [color]="i === 0 ? 'primary' : 'accent'">
+              </mat-progress-bar>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Election Info -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>info</mat-icon>
+          Informacione Shtesë
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Krijuar nga:</label>
+            <span class="address">{{ election.creator }}</span>
+          </div>
+          <div class="info-item">
+            <label>Statusi:</label>
+            <span>{{ election.isActive ? 'Aktive' : 'Jo aktive' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Blockchain ID:</label>
+            <span>#{{ election.id }}</span>
+          </div>
+          <div class="info-item">
+            <label>Smart Contract:</label>
+            <span class="address">{{ election.creator.substring(0, 10) }}...</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

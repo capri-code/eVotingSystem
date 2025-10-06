@@ -1,0 +1,220 @@
+<div class="voting-container">
+  <!-- Header -->
+  <mat-toolbar color="primary">
+    <button mat-icon-button (click)="goToDashboard()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span>Votimi Elektronik</span>
+    <span class="spacer"></span>
+    <button mat-button (click)="viewResults()">
+      <mat-icon>bar_chart</mat-icon>
+      Rezultatet
+    </button>
+  </mat-toolbar>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Duke ngarkuar të dhënat e zgjedhjes...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading && election" class="voting-content">
+    
+    <!-- Election Info Card -->
+    <mat-card class="election-info-card" @slideIn>
+      <mat-card-header>
+        <mat-card-title>{{ election.name }}</mat-card-title>
+        <mat-card-subtitle>
+          <mat-chip [color]="isElectionActive() ? 'primary' : 'warn'" selected>
+            {{ getElectionStatus() }}
+          </mat-chip>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ election.description }}</p>
+        <div class="election-meta">
+          <span><mat-icon inline>people</mat-icon> {{ election.candidateCount }} Kandidatë</span>
+          <span><mat-icon inline>how_to_vote</mat-icon> {{ election.totalVotes }} Vota</span>
+          <span><mat-icon inline>schedule</mat-icon> {{ formatDate(election.startTime) }} - {{ formatDate(election.endTime) }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Step 1: Candidate Selection -->
+    <div *ngIf="step === 1" class="step-container">
+      <mat-card class="step-header">
+        <h2>Hapi 1: Zgjidhni Kandidatin</h2>
+        <p>Zgjidhni kandidatin për të cilin dëshironi të votoni</p>
+      </mat-card>
+
+      <div class="candidates-grid">
+        <mat-card 
+          *ngFor="let candidate of candidates; let i = index" 
+          class="candidate-card"
+          [class.selected]="selectedCandidate?.id === candidate.id"
+          (click)="selectCandidate(candidate)"
+          @cardAnimation
+          [style.animation-delay]="i * 0.1 + 's'">
+          
+          <div class="candidate-header">
+            <div class="candidate-avatar" *ngIf="!candidate.imageUrl">
+              {{ getCandidateInitial(candidate.name) }}
+            </div>
+            <img *ngIf="candidate.imageUrl" [src]="candidate.imageUrl" [alt]="candidate.name" class="candidate-image">
+            
+            <div class="selection-indicator" *ngIf="selectedCandidate?.id === candidate.id">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+          </div>
+          
+          <mat-card-content>
+            <h3>{{ candidate.name }}</h3>
+            <p class="party">{{ candidate.party }}</p>
+            <div class="candidate-id">ID: #{{ candidate.id }}</div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="action-buttons">
+        <button 
+          mat-raised-button 
+          color="primary" 
+          size="large"
+          [disabled]="!selectedCandidate"
+          (click)="confirmSelection()">
+          <mat-icon>arrow_forward</mat-icon>
+          Vazhdo me Konfirmimin
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: Confirmation -->
+    <div *ngIf="step === 2" class="step-container">
+      <mat-card class="step-header">
+        <h2>Hapi 2: Konfirmoni Votën</h2>
+        <p>Ju lutem rishikoni dhe konfirmoni zgjedhjen tuaj</p>
+      </mat-card>
+
+      <mat-card class="confirmation-card" @slideIn>
+        <mat-card-header>
+          <mat-card-title>Ju po votoni për:</mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="selected-candidate">
+            <div class="candidate-avatar-large" *ngIf="!selectedCandidate?.imageUrl">
+              {{ getCandidateInitial(selectedCandidate!.name) }}
+            </div>
+            <img *ngIf="selectedCandidate?.imageUrl" 
+                             [src]="selectedCandidate?.imageUrl" 
+                             [alt]="selectedCandidate?.name" 
+                             class="candidate-image-large">
+            
+            <h2>{{ selectedCandidate?.name }}</h2>
+            <p>{{ selectedCandidate?.party }}</p>
+            <mat-divider></mat-divider>
+            
+            <div class="warning-message">
+              <mat-icon color="warn">warning</mat-icon>
+              <p>
+                <strong>Kujdes!</strong> Pasi të konfirmoni votën, ajo nuk mund të ndryshohet.
+                Vota juaj do të regjistrohet përgjithmonë në blockchain.
+              </p>
+            </div>
+          </div>
+        </mat-card-content>
+        
+        <mat-card-actions>
+          <button mat-button (click)="backToSelection()">
+            <mat-icon>arrow_back</mat-icon>
+            Kthehu Mbrapa
+          </button>
+          <button 
+            mat-raised-button 
+            color="warn" 
+            (click)="submitVote()"
+            [disabled]="voting">
+            <mat-spinner *ngIf="voting" diameter="20"></mat-spinner>
+            <mat-icon *ngIf="!voting">how_to_vote</mat-icon>
+            {{ voting ? 'Duke procesuar...' : 'Konfirmo Votën' }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <!-- Step 3: Success -->
+    <div *ngIf="step === 3" class="step-container">
+      <mat-card class="success-card" @slideIn>
+        <mat-card-content>
+          <div class="success-content">
+            <mat-icon class="success-icon">check_circle</mat-icon>
+            <h1>Vota u Regjistrua me Sukses!</h1>
+            <p>Faleminderit për pjesëmarrjen tuaj në procesin demokratik</p>
+            
+            <div class="transaction-info">
+              <h3>Detajet e Transaksionit</h3>
+              <div class="tx-details">
+                <label>Transaction Hash:</label>
+                <code>{{ formatTransactionHash(transactionHash) }}</code>
+                <button mat-icon-button (click)="viewOnEtherscan()" matTooltip="Kopjo Hash">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </div>
+              
+              <div class="tx-details">
+                <label>Zgjedhja:</label>
+                <span>{{ election.name }}</span>
+              </div>
+              
+              <div class="tx-details">
+                <label>Kandidati:</label>
+                <span>{{ selectedCandidate?.name }}</span>
+              </div>
+              
+              <div class="tx-details">
+                <label>Koha:</label>
+                <span>{{ formatDate(Date.now() / 1000) }}</span>
+              </div>
+            </div>
+            
+            <mat-divider></mat-divider>
+            
+            <div class="next-steps">
+              <p>Çfarë ndodh tani?</p>
+              <ul>
+                <li>Vota juaj është regjistruar përgjithmonë në blockchain</li>
+                <li>Mund të shikoni rezultatet në kohë reale</li>
+                <li>Rezultatet përditësohen automatikisht</li>
+              </ul>
+            </div>
+          </div>
+        </mat-card-content>
+        
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="viewResults()">
+            <mat-icon>bar_chart</mat-icon>
+            Shiko Rezultatet Live
+          </button>
+          <button mat-button (click)="goToDashboard()">
+            Kthehu në Dashboard
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Not Active Warning -->
+  <div *ngIf="!loading && election && !isElectionActive()" class="warning-container">
+    <mat-card class="warning-card">
+      <mat-card-content>
+        <mat-icon color="warn">error</mat-icon>
+        <h2>Zgjedhja nuk është aktive</h2>
+        <p>Kjo zgjedhje {{ getElectionStatus() }}. Votimi nuk është i mundur.</p>
+        <button mat-raised-button color="primary" (click)="goToDashboard()">
+          Kthehu në Dashboard
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
